@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "apps.products",
     "apps.orders",
     "apps.payments",
+    "apps.recommendations.apps.RecommendationsConfig",    
     # "recommendations",
 ]
 
@@ -127,18 +128,20 @@ SPECTACULAR_SETTINGS = {
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+import os
+
+import os
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ecommerce_backend",
-        "USER": "jim",
-        "PASSWORD": "8489659ma",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
-
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
@@ -235,3 +238,36 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 CORS_ALLOW_CREDENTIALS = True
+import os
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "standard": {
+            "format": "[{levelname}] {asctime} {name}: {message}",
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs.log"),
+            "formatter": "standard",
+        },
+    },
+
+    "root": {
+        "handlers": [
+            "console",
+            "file",
+        ],
+        "level": "INFO",
+    },
+}

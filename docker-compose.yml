@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:16
+
+    restart: always
+
+    environment:
+      POSTGRES_DB: ecommerce_backend
+      POSTGRES_USER: jim
+      POSTGRES_PASSWORD: 8489659ma
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+
+    volumes:
+      - .:/app
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - db
+
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:

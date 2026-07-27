@@ -61,5 +61,9 @@ urlpatterns = [
     path(
     "api/payments/",
     include("apps.payments.urls"),
-),
+   ),
+    path(
+    "api/recommendations/",
+    include("apps.recommendations.urls"),
+    ),  
 ]
