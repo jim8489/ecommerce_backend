@@ -156,3 +156,59 @@ class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
             {"received": True},
             status=status.HTTP_200_OK,
         )
+        
+from django.http import HttpResponseRedirect
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+
+
+class BkashCallbackView(APIView):
+
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+
+        payment_id = request.GET.get("paymentID")
+        status = request.GET.get("status", "").lower()
+
+        if status == "success":
+
+            PaymentService.confirm_payment(payment_id)
+
+            return HttpResponseRedirect(
+                "/payment/success/"
+            )
+
+        elif status == "failure":
+
+            payment = Payment.objects.filter(
+                transaction_id=payment_id
+            ).first()
+
+            if payment:
+                payment.status = Payment.Status.FAILED
+                payment.save(update_fields=["status"])
+
+            return HttpResponseRedirect(
+                "/payment/failed/"
+            )
+
+        elif status == "cancel":
+
+            payment = Payment.objects.filter(
+                transaction_id=payment_id
+            ).first()
+
+            if payment:
+                payment.status = Payment.Status.FAILED
+                payment.save(update_fields=["status"])
+
+            return HttpResponseRedirect(
+                "/payment/cancelled/"
+            )
+
+        return Response(
+            {"detail": "Invalid callback"},
+            status=400,
+        )
