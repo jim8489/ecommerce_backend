@@ -41,3 +41,6 @@ dist/
 
 # Build
 *.egg-info/
+
+# Docker
+.docker/
